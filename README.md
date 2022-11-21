@@ -11,6 +11,9 @@
 • **Change the Body section to type "form-data"**
 • The three key-value pairs that are required are ToAddress, Subject, and Body
 
+##Issues and Refinement
+There were a few issues I have with the code I am submitting that don't sit well with me. The first which problem I ran into was with creating the appsettings.json file. It makes the most sense to set the file path for logging in this location however, storing paths in JSON doesn't work well and even if it did reading it could be an issue without C# knowing that it is a string literal. The second issue is the amount of bloat in the API/Frontend portion of the project. This was my first time creating a fresh MVC project and it came with a ton of boilerplate code that I had no use for. Additionally when I updated all of the package most of the styling libraries stopped working. If I were to spend more time on this project I think these two areas would be the first things I would look to improve upon.
+
 ##Project Information
 You are being asked to build a working implement of a “client’s” feature request.
 The client has a high volume application which must be able to send emails to customer.
