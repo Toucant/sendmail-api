@@ -7,3 +7,6 @@ App_Start/
 obj/
 
 TestInConsole/
+
+bin/
+
