@@ -28,7 +28,12 @@ namespace sendmail_api
                 logMail(0, recipient, false, "Invalid Recipient Address");
                 return;
             }
-            MimeMessage email = buildEMailMessage(recipient, subject, body); 
+            MimeMessage email = buildEMailMessage(recipient, subject, body);
+            if (email == null)
+            {
+                return;
+            }
+             
             SmtpClient mailConnection = new SmtpClient();
             mailConnection.Connect(mailSettings.SmtpHost, mailSettings.SmtpPort, MailKit.Security.SecureSocketOptions.StartTls);
             while (!isSent && count < ATTEMPT_LIMIT)
@@ -56,7 +61,14 @@ namespace sendmail_api
         private MimeMessage buildEMailMessage(string recipient, string subject, string body)
         {
             MimeMessage message = new MimeMessage();
-            message.From.Add(MailboxAddress.Parse(mailSettings.SenderAddress));
+            try { 
+                message.From.Add(MailboxAddress.Parse(mailSettings.SenderAddress));
+            } catch(Exception ex)
+            {
+                Console.WriteLine("Fill in values in appsettings.json");
+                return null;
+                //Check appsetting.json values
+            }
             message.To.Add(MailboxAddress.Parse(recipient));
             message.Subject = subject;
             message.Body = new TextPart(MimeKit.Text.TextFormat.Plain) { Text = body };
