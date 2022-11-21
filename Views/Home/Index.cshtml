@@ -1,0 +1,41 @@
+﻿@model sendmail_api.Models.MailModel
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>SendMail</title>
+</head>
+<body>
+    <div>
+        @using (Html.BeginForm("Index", "Home", FormMethod.Post))
+        {
+            <table>
+                <tr>
+                    <th>Email Details</th>
+                </tr>
+                <tr>
+                    <td>Send To: </td>
+                    <td>@Html.TextBoxFor(t => t.ToAddress)</td>
+                </tr>
+                <tr>
+                    <td>Subject: </td>
+                    <td>@Html.TextBoxFor(t => t.Subject)</td>
+                </tr>
+                <tr>
+                    <td>Body: </td>
+                    <td>@Html.TextBoxFor(t => t.Body)</td>
+                </tr>
+                <tr>
+                    <td><input type="submit" value="Submit" /></td>
+                </tr>
+            </table>
+        }
+    </div>
+</body>
+</html>

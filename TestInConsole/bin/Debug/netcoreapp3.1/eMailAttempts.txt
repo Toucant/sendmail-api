@@ -1,0 +1,15 @@
+Success
+jonathon.ferry@ethereal.email, 	3, 	11/20/2022 4:52:28 PM, 	MailKit.ServiceNotConnectedException: The SmtpClient must be connected before you can authenticate.
+   at MailKit.Net.Smtp.SmtpClient.ValidateArguments(Encoding encoding, ICredentials credentials)
+   at MailKit.Net.Smtp.SmtpClient.Authenticate(Encoding encoding, ICredentials credentials, CancellationToken cancellationToken)
+   at MailKit.MailService.Authenticate(Encoding encoding, String userName, String password, CancellationToken cancellationToken)
+   at MailKit.MailService.Authenticate(String userName, String password, CancellationToken cancellationToken)
+   at TestInConsole.EmailService.SendEmail(String recipient, String subject, String body) in C:\Users\Connor\source\repos\TestInConsole\EmailService.cs:line 38
+jonathon.ferry@ethereal.email, 	3, 	11/20/2022 4:53:34 PM, 	System.InvalidOperationException: The SmtpClient is already connected.
+   at MailKit.Net.Smtp.SmtpClient.ValidateArguments(String host, Int32 port)
+   at MailKit.Net.Smtp.SmtpClient.Connect(String host, Int32 port, SecureSocketOptions options, CancellationToken cancellationToken)
+   at TestInConsole.EmailService.SendEmail(String recipient, String subject, String body)
+jonathon.ferry@ethereal.email, 	4, 	11/20/2022 4:54:13 PM, 	System.InvalidOperationException: The SmtpClient is already connected.
+   at MailKit.Net.Smtp.SmtpClient.ValidateArguments(String host, Int32 port)
+   at MailKit.Net.Smtp.SmtpClient.Connect(String host, Int32 port, SecureSocketOptions options, CancellationToken cancellationToken)
+   at TestInConsole.EmailService.SendEmail(String recipient, String subject, String body) in C:\Users\Connor\source\repos\TestInConsole\EmailService.cs:line 38
