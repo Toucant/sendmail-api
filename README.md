@@ -1,4 +1,4 @@
-#Send Mail Assignment - Connor Neary
+# Send Mail Assignment - Connor Neary
 ## Project Setup
 - Open the sendmail-api solution in Visual Studio
 - **Modify the appsettings.json file with your email information**
