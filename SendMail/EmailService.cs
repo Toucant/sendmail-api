@@ -12,13 +12,13 @@ namespace sendmail_api
     public class EmailService
     {
         public MailerSettings mailSettings; //Pulled from appsettings.json 
-        public static string savePath = @"C:\temp\eMailAttempts.txt"; 
+        public static string savePath = @"C:\temp\eMailAttempts.txt"; //Set savePath before running
         private readonly int ATTEMPT_LIMIT = 3; //Amount of tries before giving up and logging the record
         public EmailService(MailerSettings mailerSettings)
         {
             mailSettings = mailerSettings;
         }
-        public void SendEmail(string recipient, string subject, string body) //take in credentials?
+        public void SendEmail(string recipient, string subject, string body)
         {
             int count = 0;
             bool isSent = false;
