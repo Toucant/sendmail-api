@@ -1,0 +1,9 @@
+*.txt
+
+App_Data/
+
+App_Start/
+
+obj/
+
+TestInConsole/
