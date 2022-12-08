@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using sendmail_api.DataAccess;
 using sendmail_api.Models;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ namespace sendmail_api.Controllers
 {
     public class HomeController : Controller
     {
+        private MailContext db = new MailContext();
         public ActionResult Index()
         {
             return View();
@@ -23,15 +25,19 @@ namespace sendmail_api.Controllers
             var config = new ConfigurationBuilder()
               .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
               .AddJsonFile("appsettings.json").Build();
-            //Code from Microsoft.Extensions.Configuration
+            //Microsoft.Extensions.Configuration library
             var section = config.GetSection(nameof(MailerSettings));
             var mailSettingsConfig = section.Get<MailerSettings>();
-            //Instantiate EmailService with local settings
-            EmailService mailService = new EmailService(mailSettingsConfig);
-            mailService.SendEmail(mailInfo.ToAddress, mailInfo.Subject, mailInfo.Body);
-            Console.WriteLine();
-            return View();
 
+            MailContext context = new MailContext();
+
+            EmailService mailService = new EmailService(mailSettingsConfig,context, true);
+            mailService.SendEmail(mailInfo.ToAddress, mailInfo.Subject, mailInfo.Body);
+            return View();
+        }
+        public ViewResult MailLogs()
+        {
+            return View(db.LogList.ToList());
         }
     }
 }

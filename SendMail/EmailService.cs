@@ -5,19 +5,45 @@ using System.Net;
 using MailKit.Net.Smtp;
 using MimeKit;
 using System.IO;
-
-
+using System.Data.Entity;
+using sendmail_api.DataAccess;
+using sendmail_api.Models;
+//Schema: clarity-email
 namespace sendmail_api
 {
     public class EmailService
     {
-        public MailerSettings mailSettings; //Pulled from appsettings.json 
-        public static string savePath = @"C:\temp\eMailAttempts.txt"; //Set savePath before running
+        private MailerSettings mailSettings; //Pulled from appsettings.json 
+        private static string savePath = @"C:\temp\eMailAttempts.txt"; //Set savePath before running
         private readonly int ATTEMPT_LIMIT = 3; //Amount of tries before giving up and logging the record
+        private MailContext context;
+        private bool logToFile = true;
+        #region Constructors & Setters 
         public EmailService(MailerSettings mailerSettings)
         {
             mailSettings = mailerSettings;
         }
+        public EmailService(MailerSettings mailerSettings,MailContext mailContext, bool logToTextFile)
+        {
+            mailSettings = mailerSettings;
+            context = mailContext;
+            logToFile = logToTextFile;
+        }
+
+        public void configureMailSettings(MailerSettings mailerSettings)
+        {
+            mailSettings = mailerSettings;
+        }
+        public void configureContextSettings(MailContext mailContext)
+        {
+            context = mailContext;
+        }
+        public void changeLogType(bool logFile)
+        {
+            logToFile = logFile;
+        }
+        #endregion
+        #region Primary Fucntions
         public void SendEmail(string recipient, string subject, string body)
         {
             int count = 0;
@@ -33,17 +59,18 @@ namespace sendmail_api
             {
                 return;
             }
-             
+
             SmtpClient mailConnection = new SmtpClient();
+
             mailConnection.Connect(mailSettings.SmtpHost, mailSettings.SmtpPort, MailKit.Security.SecureSocketOptions.StartTls);
             while (!isSent && count < ATTEMPT_LIMIT)
             {
                 try
-                {       
+                {
+                    //mailConnection.ServerCertificateValidationCallback = (s, c, h, e) => true;
                     mailConnection.Authenticate(mailSettings.SenderAddress, mailSettings.SmtpPass);
                     mailConnection.Send(email);
                     isSent = true;
-                    Console.WriteLine("Success!");
                 }
                 catch (Exception ex)
                 {
@@ -52,9 +79,14 @@ namespace sendmail_api
                     errorToLog = errorToLog.Substring(0, errorToLog.IndexOf(Environment.NewLine)); //Only return the first line of exception
                 }
             }
-            logMail(count, recipient,isSent, errorToLog);
-            
-            
+            if (logToFile)
+            {
+                logMail(count, recipient, isSent, errorToLog);
+            } else
+            {
+                logMailToServer(count, recipient, isSent, errorToLog);
+            }
+
             mailConnection.Disconnect(true);
         }
 
@@ -63,16 +95,21 @@ namespace sendmail_api
             MimeMessage message = new MimeMessage();
             try { 
                 message.From.Add(MailboxAddress.Parse(mailSettings.SenderAddress));
-            } catch(Exception ex)
+            } catch(Exception ex) //Invalid appsetting.json values
             {
                 Console.WriteLine("Fill in values in appsettings.json");
-                return null;
-                //Check appsetting.json values
+                throw ex;
             }
             message.To.Add(MailboxAddress.Parse(recipient));
             message.Subject = subject;
-            message.Body = new TextPart(MimeKit.Text.TextFormat.Plain) { Text = body };
+            message.Body = new TextPart("plain") { Text = body };
             return message;
+        }
+        private void logMailToServer(int attempts, string emailAddress, bool status, string logNote)
+        {
+            var MailLog = new LogModel { EmailAddress = emailAddress,AttemptCount = attempts, PassFail = (status == true ? "SUCCESS" : "FAIL"), DateTried=DateTime.Now,LogNote = logNote };
+            context.LogList.Add(MailLog);
+            context.SaveChanges();
         }
         private static void logMail(int attempts, string emailAddress, bool status, string logNote)
         {
@@ -90,7 +127,8 @@ namespace sendmail_api
                 sw.WriteLine(textBuild);
             }
         }
-        
+        #endregion
+        #region Misc & Utility Functions
         private static bool IsValidEmail(string email)
         {
             var trimmedEmail = email.Trim();
@@ -105,6 +143,7 @@ namespace sendmail_api
                 return false;
             }
         }
+        #endregion
     }
-   
+
 }
